@@ -3,10 +3,14 @@
 ## Description
 
 Prisma Assistant is a virtual assistant made using Python.
+It can :-
 
-- It can answer simple queries
-- It can search google, youtube, wikipedia and amazon for prices, videos, and definitions
-- It can also tell the location of places
+- Answer simple queries
+- Search google, youtube, wikipedia and amazon for prices, videos, and definitions
+- Also tell the location of places
+- Do simple math
+- Play rock, paper, scissors
+- Capture screenshots
 
 ## Usage
 

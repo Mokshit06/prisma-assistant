@@ -9,6 +9,8 @@ import os
 import re
 import ssl
 import certifi
+from pyautogui import screenshot
+# import pathlib
 
 
 class Person:
@@ -43,16 +45,16 @@ def record_audio(ask=False):
         except sr.RequestError:
             speak(
                 'Sorry, I cant connect to my servers. Try again later.')
-        print(f'>> {voice_data}')
+        print(f'Q: {voice_data}')
         return voice_data
 
 
 def speak(audio_string):
     tts = gTTS(text=audio_string, lang='en')
-    r = random.randint(1, 20000000)
-    audio_file = f'audio-{r}.mp3'
+    file_num = random.randint(1, 20000000)
+    audio_file = f'audio-{file_num}.mp3'
     tts.save(audio_file)
-    print(f'{audio_string}\n')
+    print(f'>> {audio_string}\n')
     playsound.playsound(audio_file)
     os.remove(audio_file)
 
@@ -97,8 +99,8 @@ def respond(voice_data):
         time = f'The time is {hours}:{minutes}'
         speak(time)
 
-    if there_is(["how are you", "how are you doing"]):
-        speak(f"I'm very well, thanks for asking {person.name}")
+    if there_is(['how are you', 'how are you doing']):
+        speak(f'I\'m very well, thanks for asking {person.name}')
 
     if there_is(['search for', 'look for']) and 'youtube' not in voice_data:
         search_term = voice_data.split('for')[-1].strip()
@@ -124,6 +126,62 @@ def respond(voice_data):
         webbrowser.get().open(url)
         speak(f'Check what I found for {search_term}')
 
+    if there_is(['capture', 'screenshot', 'my screen']):
+        screenshot_captured = screenshot()
+        file_num = random.randint(1, 10000)
+        destination = f'screen-{file_num}.png'
+        screenshot_captured.save(destination)
+        speak(f'Screenshot is saved at {destination}')
+
+    if there_is(['game']):
+        user_move = record_audio('Choose your move')
+        computer_choices = ['rock', 'paper', 'scissors']
+
+        computer_move = computer_choices[random.randint(
+            0, len(computer_choices) - 1)]
+
+        speak(f'The computer chose {computer_move}.\nYou chose {user_move}')
+        if computer_move == user_move:
+            speak('The match is draw')
+        elif user_move == 'rock':
+            if computer_move == 'paper':
+                speak('Congrats! You won')
+            else:
+                speak('Computer won')
+        elif user_move == 'paper':
+            if computer_move == 'rock':
+                speak('Congrats! You won')
+            else:
+                speak('Computer won')
+        elif user_move == 'scissors':
+            if computer_move == 'rock':
+                speak('Congrats! You won')
+            else:
+                speak('Computer won')
+        else:
+            speak('Please choose a move')
+
+    if there_is(['plus', 'minus', 'divide', 'multiply', 'power', '+', '-', '*', '/']):
+        expression = voice_data.split()[1]
+
+        if expression == '+':
+            speak(
+                int(voice_data.split()[0]) + int(voice_data.split()[2]))
+        elif expression == '-':
+            speak(
+                int(voice_data.split()[0]) - int(voice_data.split()[2]))
+        elif expression == 'multiply':
+            speak(
+                int(voice_data.split()[0]) * int(voice_data.split()[2]))
+        elif expression == 'divide':
+            speak(
+                int(voice_data.split()[0]) / int(voice_data.split()[2]))
+        elif expression == 'power':
+            speak(
+                int(voice_data.split()[0]) ** int(voice_data.split()[2]))
+        else:
+            speak("Wrong Expression")
+
     if there_is(['location of', 'where is']):
         location = voice_data.split('of')[-1].strip() if len(
             voice_data.split('is')) == 1 else voice_data.split('is')[-1].strip()
@@ -140,7 +198,8 @@ time.sleep(1)
 
 person = Person()
 assistant = Assistant('Prisma')
-speak('\nTry saying something!')
+print('\n')
+speak('Try saying something!')
 
 while True:
     voice_data = record_audio()
